@@ -14,14 +14,28 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Link from "next/link";
+import { ChatContext } from "@/contexts/ChatContext";
+import { AuthContext } from "@/contexts/AuthContext";
 
-const LeftSidebar = ({ setSelectedChat }) => {
+const LeftSidebar = () => {
+  const {
+    getUsers,
+    users,
+    selectedUser,
+    setSelectedUser,
+    unseenMessages = 3,
+    setUnseenMessages,
+  } = useContext(ChatContext);
+  console.log("this in side bar selected user", selectedUser);
+  const { onlineUsers } = useContext(AuthContext);
+  console.log("online user", onlineUsers);
   const [online, setOnline] = useState(true);
-  const [unseenMessages, setUnseenMessages] = useState(3);
+  const [input, setInput] = useState(false);
+  // const [unseenMessages, setUnseenMessages] = useState(3);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -30,6 +44,17 @@ const LeftSidebar = ({ setSelectedChat }) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const filteredUsers = input
+    ? users.filter((user) =>
+        user.fullName.toLowerCase().includes(input.toLowerCase())
+      )
+    : users;
+
+  console.log(filteredUsers);
+  useEffect(() => {
+    getUsers();
+  }, [onlineUsers]);
   return (
     <Box
       bgcolor={"background.paper"}
@@ -90,6 +115,7 @@ const LeftSidebar = ({ setSelectedChat }) => {
       >
         <SearchIcon color="text.secondary" />
         <TextField
+          onChange={(e) => setInput(e.target.value)}
           variant="outlined"
           placeholder="Search User..."
           sx={{
@@ -136,11 +162,11 @@ const LeftSidebar = ({ setSelectedChat }) => {
           },
         }}
       >
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((item) => (
+        {filteredUsers?.map((item) => (
           <ListItem
-            onClick={() => setSelectedChat(true)}
+            onClick={() => setSelectedUser(item._id)}
             alignItems="flex-start"
-            key={item}
+            key={item._id}
             sx={{
               py: 0.5,
               mt: 1,
@@ -149,36 +175,35 @@ const LeftSidebar = ({ setSelectedChat }) => {
           >
             <ListItemAvatar>
               <Avatar
-                alt="Remy Sharp"
+                alt={item.fullName}
                 src="/static/images/avatar/1.jpg"
                 sx={{ width: 40, height: 40 }}
               />
             </ListItemAvatar>
+
             <ListItemText
-              primary="Adnan Tariq"
+              primary={item.fullName}
               secondary={
-                <React.Fragment>
-                  <Typography
-                    component="span"
-                    variant="caption"
-                    sx={{
-                      color: `${online ? "green" : "primary.text"}`,
-                      display: "inline",
-                    }}
-                  >
-                    {online ? "Online" : "Offline"}
-                  </Typography>
-                </React.Fragment>
+                <Typography
+                  component="span"
+                  variant="caption"
+                  sx={{
+                    color: onlineUsers?.includes(item._id)
+                      ? "green"
+                      : "text.secondary",
+                    display: "inline",
+                  }}
+                >
+                  {onlineUsers?.includes(item._id) ? "Online" : "Offline"}
+                </Typography>
               }
             />
-            {unseenMessages > 0 && (
+
+            {unseenMessages?.[item._id] > 0 && (
               <Badge
-                badgeContent={unseenMessages}
+                badgeContent={unseenMessages[item._id]}
                 color="success"
-                sx={{
-                  mt: 4,
-                  mr: 3,
-                }}
+                sx={{ mt: 4, mr: 3 }}
               />
             )}
           </ListItem>

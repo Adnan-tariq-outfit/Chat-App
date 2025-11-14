@@ -38,9 +38,9 @@ app.use(cors());
 app.use(express.json());
 
 // Routes setup
-app.use("/api", (req, res) => {
-  res.json({ message: "API is working!" });
-});
+// app.use("/api", (req, res) => {
+//   res.json({ message: "API is working!" });
+// });
 app.use("/api/auth", userRouter);
 app.use("/api/messages", messageRouter);
 // connect to database

@@ -26,7 +26,7 @@ const Home = () => {
           overflow: "hidden",
         }}
       >
-        <LeftSidebar setSelectedChat={setSelectedChat} />
+        <LeftSidebar />
         <ChatContainer selectedChat={selectedChat} />
         {selectedChat && <RightSidebar selectedChat={selectedChat} />}
       </Box>

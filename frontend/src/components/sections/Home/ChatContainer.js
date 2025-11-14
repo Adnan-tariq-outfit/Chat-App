@@ -10,35 +10,76 @@ import {
   styled,
   IconButton,
 } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import InsertPhotoOutlinedIcon from "@mui/icons-material/InsertPhotoOutlined";
 import SendIcon from "@mui/icons-material/Send";
+import { ChatContext } from "@/contexts/ChatContext";
+import { AuthContext } from "@/contexts/AuthContext";
 
 const VisuallyHiddenInput = styled("input")({
   display: "none",
 });
 
 export const ChatContainer = ({ selectedChat }) => {
+  const { messages, selectedUser, setSelectedUser, sendMessage, getMessages } =
+    useContext(ChatContext);
+  const { authUser, onlineUsers } = useContext(AuthContext);
+  console.log("selected User", selectedUser);
+
+  const [input, setInput] = useState("");
   const [active, setActive] = useState(true);
   const scrollEnd = useRef();
+  // Handle sending a message
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (input.trim() === "") return null;
+
+    await sendMessage({ text: input.trim() });
+    setInput("");
+  };
+
+  // Handle sending an Images
+  const handleSendImage = async (e) => {
+    const file = e.target.files[0];
+
+    // check if the file is an image
+    if (!file || !file.type.startsWith("image/")) {
+      toast.error("Select an image file");
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onloadend = async () => {
+      await sendMessage({ image: reader.result }); // BASE64 image
+      e.target.value = ""; // reset input
+    };
+
+    reader.readAsDataURL(file); // convert file -> base64
+  };
 
   useEffect(() => {
-    if (scrollEnd.current) {
+    if (selectedUser) {
+      getMessages(selectedUser._id);
+    }
+  }, [selectedUser]);
+  useEffect(() => {
+    if (scrollEnd.current && messages) {
       scrollEnd.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, []);
+  }, [messages]);
 
-  const currentUserId = "680f50e4f10f3cd28382ecf9";
-
-  return selectedChat ? (
+  return selectedUser ? (
     <Box sx={{ height: "100%", flexGrow: 2, position: "relative" }}>
       <Box sx={{ p: 2, display: "flex", alignItems: "center", gap: 2 }}>
         <Avatar
-          src={"/static/images/avatar/1.jpg"}
+          src={selectedUser.profilePic || "/static/images/avatar/1.jpg"}
           sx={{ width: 40, height: 40 }}
         />
-        <Typography variant="h5">Adnan Tariq</Typography>
-        {active && <Badge color="success" variant="dot" />}
+        <Typography variant="h5">{selectedUser.fullName}</Typography>
+        {onlineUsers.includes(selectedUser._id) && (
+          <Badge color="success" variant="dot" />
+        )}
       </Box>
       <Divider></Divider>
       <Box
@@ -71,8 +112,8 @@ export const ChatContainer = ({ selectedChat }) => {
           },
         }}
       >
-        {messagesDummyData.map((msg, index) => {
-          const isSender = msg.senderId === currentUserId;
+        {messages?.map((msg, index) => {
+          const isSender = msg.senderId === authUser._id;
 
           return (
             <Box
@@ -176,6 +217,9 @@ export const ChatContainer = ({ selectedChat }) => {
           }}
         >
           <TextField
+            onChange={(e) => setInput(e.target.value)}
+            value={input}
+            onKeyDown={(e) => (e.key == "Enter" ? handleSendMessage(e) : null)}
             variant="outlined"
             placeholder="Search User..."
             sx={{
@@ -193,15 +237,21 @@ export const ChatContainer = ({ selectedChat }) => {
               },
             }}
           />
-          <VisuallyHiddenInput id="selectImage" type="file" accept="image/*" />
+          <VisuallyHiddenInput
+            onChange={handleSendImage}
+            id="selectImage"
+            type="file"
+            accept="image/*"
+          />
           <Box component="label" htmlFor="selectImage">
-            <IconButton aria-label="delete">
+            <IconButton aria-label="insert image">
               <InsertPhotoOutlinedIcon />
             </IconButton>
           </Box>
         </Box>
         <IconButton
-          aria-label="delete"
+          onClick={handleSendMessage}
+          aria-label="submit button"
           sx={{
             mr: "10px",
             width: "45px",

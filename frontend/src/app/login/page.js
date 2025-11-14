@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useContext } from "react";
 import {
   Box,
   Button,
@@ -11,11 +11,15 @@ import {
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { AuthContext } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
   const [isLogin, setIsLogin] = React.useState(true);
+  const { login } = useContext(AuthContext);
+  const router = useRouter();
 
-  // ✅ Validation Schemas
+  // Validation Schemas
   const RegisterValidationSchema = Yup.object({
     username: Yup.string()
       .min(3, "Username must be at least 3 characters")
@@ -38,7 +42,7 @@ const Login = () => {
     password: Yup.string().required("Password is required"),
   });
 
-  // ✅ Formik Setup
+  // Formik Setup
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -49,13 +53,25 @@ const Login = () => {
     validationSchema: isLogin
       ? LoginValidationSchema
       : RegisterValidationSchema,
-    onSubmit: (values) => {
-      if (isLogin) {
-        console.log("Logging in:", values);
-        alert("Login successful!");
-      } else {
-        console.log("Registering:", values);
-        alert("Account created successfully!");
+    onSubmit: async (values) => {
+      try {
+        if (isLogin) {
+          await login("login", {
+            email: values.email,
+            password: values.password,
+          });
+        } else {
+          await login("signup", {
+            fullName: values.username,
+            email: values.email,
+            password: values.password,
+            terms: values.terms,
+          });
+        }
+
+        router.push("/"); // Redirect after login/register
+      } catch (error) {
+        console.error("Login/Register Error:", error);
       }
     },
   });
@@ -83,10 +99,10 @@ const Login = () => {
             mx: "auto",
             mb: 4,
             width: 300,
-            alignSelf: "center",
           }}
         />
       </Box>
+
       <Box flex={1}>
         <Paper
           elevation={3}
@@ -104,7 +120,7 @@ const Login = () => {
             {isLogin ? "Login" : "Create Account"}
           </Typography>
 
-          {/* Username only in Register mode */}
+          {/* Username only in Register */}
           {!isLogin && (
             <TextField
               label="Username"
@@ -147,7 +163,7 @@ const Login = () => {
             helperText={formik.touched.password && formik.errors.password}
           />
 
-          {/* Checkbox only for Register */}
+          {/* Checkbox Register only */}
           {!isLogin && (
             <>
               <FormControlLabel
@@ -186,7 +202,7 @@ const Login = () => {
             color="primary"
             fullWidth
             sx={{ mt: 1, borderRadius: 10, py: 1 }}
-            onClick={formik.handleSubmit}
+            onClick={formik.handleSubmit} // Fixed
           >
             {isLogin ? "Login" : "Register"}
           </Button>
