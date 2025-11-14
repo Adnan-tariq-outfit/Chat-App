@@ -27,7 +27,7 @@ const Home = () => {
         }}
       >
         <LeftSidebar />
-        <ChatContainer selectedChat={selectedChat} />
+        <ChatContainer  />
         {selectedChat && <RightSidebar selectedChat={selectedChat} />}
       </Box>
     </Box>

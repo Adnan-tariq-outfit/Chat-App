@@ -1105,9 +1105,7 @@ const Home = ()=>{
                     lineNumber: 29,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0)),
-                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_$40$babel$2b$core$40$7$2e$2_048eab391ea2e03c70ee64ac0670005b$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$sections$2f$Home$2f$ChatContainer$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ChatContainer"], {
-                    selectedChat: selectedChat
-                }, void 0, false, {
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_$40$babel$2b$core$40$7$2e$2_048eab391ea2e03c70ee64ac0670005b$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$sections$2f$Home$2f$ChatContainer$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ChatContainer"], {}, void 0, false, {
                     fileName: "[project]/src/app/page.js",
                     lineNumber: 30,
                     columnNumber: 9
