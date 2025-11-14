@@ -74,11 +74,13 @@ export const ChatProvider = ({ children }) => {
   const sendMessage = async (messageData) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/messages/send/${selectedUser._id}`,
+        `http://localhost:5000/api/messages/send/${selectedUser}`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // ⬅️ FIX
+          },
           body: JSON.stringify(messageData),
         }
       );
@@ -104,7 +106,7 @@ export const ChatProvider = ({ children }) => {
   const subscribeToMessages = async () => {
     if (!socket) return;
     socket.on("newMessages", async (newMessage) => {
-      if (selectedUser && newMessage.senderId === selectedUser._id) {
+      if (selectedUser && newMessage.senderId === selectedUser) {
         newMessage.seen = true;
         setMessages((prev) => [...prev, newMessage]);
         await fetch(

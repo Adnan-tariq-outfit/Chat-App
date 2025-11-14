@@ -164,7 +164,7 @@ const LeftSidebar = () => {
       >
         {filteredUsers?.map((item) => (
           <ListItem
-            onClick={() => setSelectedUser(item._id)}
+            onClick={() => setSelectedUser(item)}
             alignItems="flex-start"
             key={item._id}
             sx={{

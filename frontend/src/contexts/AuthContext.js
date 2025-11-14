@@ -8,7 +8,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
- 
+
   const [authUser, setAuthUser] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [socket, setSocket] = useState(null);
@@ -25,7 +25,6 @@ export const AuthProvider = ({ children }) => {
    *  CHECK AUTH (GET USER)
    * --------------------------- */
   const checkAuth = async () => {
-    
     try {
       if (!token) return;
 
@@ -39,8 +38,9 @@ export const AuthProvider = ({ children }) => {
       const data = await res.json();
 
       if (data.success) {
-        setAuthUser(data.user);
-        connectSocket(data.user);
+        console.log("this is auth", data);
+        setAuthUser(data.userData);
+        connectSocket(data.userData);
       }
     } catch (error) {
       toast.error("Authentication failed");
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
 
   /** Run checkAuth whenever token changes */
   useEffect(() => {
-    if ( localStorage.getItem("token")) checkAuth();
+    if (localStorage.getItem("token")) checkAuth();
   }, [token]);
 
   /** ---------------------------
